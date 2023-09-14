@@ -25,6 +25,28 @@ def getZip(url, title):
                 file.write(response.content)
             print(f'Saved {filename} successfully.')
             break
+            
+    introduce_filename = 'output.txt'  # 指定文件名
+    with open(introduce_filename, 'w') as file:
+        file.write(title)
+    print(f'Saved content to {introduce_filename} successfully.')
+            
+    # 创建一个新的.zip文件
+    zip_filename = 'archive_' + filename + ".zip"
+
+    with zipfile.ZipFile(zip_filename, 'w') as zip_file:
+        # 添加output.txt文件到压缩文件中
+        zip_file.write(introduce_filename)
+
+        # 添加另一个文件到压缩文件中
+        file_to_add = filename  # 替换为你要添加的文件名
+        zip_file.write(file_to_add)
+
+    print(f'Successfully created {zip_filename} with the files.')
+    
+    # 删除introduce_filename和filename文件
+    os.remove(introduce_filename)
+    os.remove(filename)                
     
         
 def extract_content(string):
@@ -36,7 +58,7 @@ def extract_content(string):
     
 
 def download(page):
-    url = 'https://www.downcode.com/sort/j_7_89_' + str(page) + '.html'
+    url = 'https://www.downcode.com/sort/j_7_218_' + str(page) + '.html'
     response = requests.get(url)
     html_content = response.text
     soup = BeautifulSoup(html_content, 'html.parser', from_encoding='gb2312')
@@ -47,6 +69,8 @@ def download(page):
         url = extract_content(link['href'])
         i = i + 1
         print(str(i) + ": " + url)
+        if i < 4:
+            continue
         
         try:
             text = link.get_text().encode('iso-8859-1').decode('gbk')
